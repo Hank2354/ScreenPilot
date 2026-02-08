@@ -10,7 +10,7 @@ import UIKit
  - parameter requirements: The requirements that must be met to open it
  */
 public final class SPScreenPrototype: Sendable {
-    public typealias NavigationFactory = @Sendable () -> UIViewController
+    public typealias NavigationFactory = @Sendable @MainActor () -> UIViewController
 
     let factory: NavigationFactory
     let requirements: [SPScreenRequirement]
