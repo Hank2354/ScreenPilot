@@ -1,12 +1,13 @@
 xcuserdata/
-
-*.hmap
-
-*.ipa
-*.dSYM.zip
-*.dSYM
-
+.DS_Store
+DerivedData/
+xcuserdata
 timeline.xctimeline
 playground.xcworkspace
 
 .build/
+
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
