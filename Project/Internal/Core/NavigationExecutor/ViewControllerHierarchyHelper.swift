@@ -1,5 +1,6 @@
 import UIKit.UIViewController
 
+@MainActor
 protocol ViewControllerHierarchyHelper {
     func findModalRoot(for viewController: UIViewController) -> UIViewController?
     func findTopViewController(from viewController: UIViewController) -> UIViewController?

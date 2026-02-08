@@ -1,4 +1,4 @@
-import UIKit
+import UIKit.UIViewController
 
 /**
  Root ViewController provider in host application

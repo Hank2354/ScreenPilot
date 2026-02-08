@@ -1,4 +1,4 @@
-public struct SPNavigationConfiguration {
+public struct SPNavigationConfiguration: Sendable {
     let animation: SPNavigationAnimation
     let screenFinder: SPScreenFinder?
 

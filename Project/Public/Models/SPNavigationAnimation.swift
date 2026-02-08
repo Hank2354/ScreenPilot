@@ -1,10 +1,10 @@
 import UIKit.UIViewControllerTransitioning
 
-public struct SPNavigationAnimation: Equatable {
+public struct SPNavigationAnimation: Equatable, Sendable {
     let appear: AnimationType
     let disappear: AnimationType
     
-    public enum AnimationType: Equatable {
+    public enum AnimationType: Equatable, @unchecked Sendable {
         case `default`
         case none
         case custom(UIViewControllerAnimatedTransitioning)

@@ -1,5 +1,6 @@
 import UIKit.UIViewController
 
+@MainActor
 protocol TopViewControllerProvider {
     var topViewController: UIViewController? { get }
 }

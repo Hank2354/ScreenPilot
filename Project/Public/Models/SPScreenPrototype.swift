@@ -9,8 +9,8 @@ import UIKit.UIViewController
  - parameter factory: Closure for creation screen target UIViewController
  - parameter requirements: The requirements that must be met to open it
  */
-public class SPScreenPrototype {
-    public typealias NavigationFactory = () -> UIViewController
+public final class SPScreenPrototype: Sendable {
+    public typealias NavigationFactory = @Sendable () -> UIViewController
 
     let factory: NavigationFactory
     let requirements: [SPScreenRequirement]

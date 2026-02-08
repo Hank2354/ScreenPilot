@@ -1,4 +1,4 @@
-import UIKit
+import UIKit.UIViewController
 
 /**
  The main object responsible for navigation within the application.
@@ -94,7 +94,7 @@ public class SPNavigator {
          factory: { ProfileViewController() },
          requirements: []
      )
-     ///
+
      await navigator.navigate(to: [profileScreen], style: .push)
      ```
 
