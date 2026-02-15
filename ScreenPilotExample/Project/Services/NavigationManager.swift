@@ -6,10 +6,12 @@ final class NavigationManager {
     
     private let navigator: SPNavigator
     private weak var mainWindow: UIWindow?
+    private let hierarchyObserver: ViewControllerHierarchyObserver
     
-    init(navigator: SPNavigator, mainWindow: UIWindow) {
+    init(navigator: SPNavigator, mainWindow: UIWindow, hierarchyObserver: ViewControllerHierarchyObserver) {
         self.navigator = navigator
         self.mainWindow = mainWindow
+        self.hierarchyObserver = hierarchyObserver
     }
     
     // MARK: - Execute Navigation Action
@@ -56,8 +58,6 @@ final class NavigationManager {
         handleResult(result)
     }
     
-    // MARK: - Get Current Screen Number
-    
     private func getCurrentScreenNumber() -> Int {
         guard let topViewController = getTopViewController() else {
             return 0
@@ -69,18 +69,6 @@ final class NavigationManager {
         
         return 0
     }
-    
-    // MARK: - Get Hierarchy
-    
-    func getHierarchy() -> String {
-        guard let rootViewController = mainWindow?.rootViewController else {
-            return "No root view controller found"
-        }
-        
-        return buildHierarchyString(from: rootViewController, level: 0)
-    }
-    
-    // MARK: - Private Methods
     
     private func openScreens(count: Int, style: SPNavigationStyle, animated: Bool) async -> SPNavigationResult {
         let currentNumber = getCurrentScreenNumber()
@@ -162,17 +150,16 @@ final class NavigationManager {
         return viewController
     }
 
-    @MainActor
     private func createDemoScreen(number: Int) -> SPScreenPrototype {
         return SPScreenPrototype(
-            factory: { @MainActor in DemoScreenFactory.createScreen(number: number) },
+            factory: { DemoScreenFactory.createScreen(number: number) },
             requirements: []
         )
     }
 
     private func createDemoScreenWithNavigationControler(number: Int) -> SPScreenPrototype {
         return SPScreenPrototype(
-            factory: { @MainActor in UINavigationController(rootViewController: DemoScreenFactory.createScreen(number: number)) },
+            factory: { UINavigationController(rootViewController: DemoScreenFactory.createScreen(number: number)) },
             requirements: []
         )
     }
@@ -181,51 +168,11 @@ final class NavigationManager {
         switch result {
         case .success:
             print("✅ Navigation successful")
+            hierarchyObserver.notifyHierarchyChanged()
         case .failure(let error):
             print("❌ Navigation failed: \(error)")
         @unknown default:
                 return
         }
-    }
-    
-    private func buildHierarchyString(from viewController: UIViewController, level: Int) -> String {
-        let indent = String(repeating: "  ", count: level)
-        var result = ""
-        
-        let vcName = getViewControllerName(viewController)
-        result += "\(indent)├─ \(vcName)"
-        
-        if let navController = viewController as? UINavigationController {
-            result += " [\(navController.viewControllers.count)]"
-            result += "\n"
-            for (index, vc) in navController.viewControllers.enumerated() {
-                let isLast = index == navController.viewControllers.count - 1
-                let prefix = isLast ? "└─" : "├─"
-                let vcName = getViewControllerName(vc)
-                result += "\(indent)  \(prefix) \(vcName)"
-                if isLast {
-                    result += " ⬅︎"
-                }
-                result += "\n"
-            }
-        } else {
-            result += "\n"
-        }
-        
-        if let presented = viewController.presentedViewController {
-            result += "\(indent)  [Modal]\n"
-            result += buildHierarchyString(from: presented, level: level + 1)
-        }
-        
-        return result
-    }
-    
-    private func getViewControllerName(_ viewController: UIViewController) -> String {
-        if let demoVC = viewController as? DemoViewController {
-            return "Screen #\(demoVC.screenNumber)"
-        }
-        
-        let fullName = String(describing: type(of: viewController))
-        return fullName.replacingOccurrences(of: "ViewController", with: "VC")
     }
 }

@@ -2,32 +2,30 @@ import UIKit
 
 final class DebugPanelHeaderView: UIView {
     
-    // MARK: - Callbacks
-    
     var onClose: (() -> Void)?
-    
-    // MARK: - UI Components
     
     private let titleLabel: UILabel = {
         let label = UILabel()
+        label.prepareForAutoLayout()
         label.text = "ScreenPilot Debug Panel"
         label.font = .systemFont(ofSize: 18, weight: .bold)
-        label.textColor = .label
-        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .black
         return label
     }()
     
-    private lazy var closeButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("✕", for: .normal)
+    private lazy var closeButton: Button = {
+        let button = Button()
+        button.prepareForAutoLayout()
+        button.configure(
+            title: "✕",
+            titleColor: .black,
+            action: { [weak self] in
+                self?.onClose?()
+            }
+        )
         button.titleLabel?.font = .systemFont(ofSize: 24, weight: .medium)
-        button.tintColor = .label
-        button.addTarget(self, action: #selector(closeButtonTapped), for: .touchUpInside)
-        button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
-    
-    // MARK: - Initialization
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -35,10 +33,8 @@ final class DebugPanelHeaderView: UIView {
     }
     
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: coder)
     }
-    
-    // MARK: - Setup
     
     private func setupUI() {
         backgroundColor = .systemBlue
@@ -46,20 +42,18 @@ final class DebugPanelHeaderView: UIView {
         addSubview(titleLabel)
         addSubview(closeButton)
         
-        NSLayoutConstraint.activate([
+        let titleLabelConstraints: [NSLayoutConstraint] = [
             titleLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
-            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            
+            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16)
+        ]
+        
+        let closeButtonConstraints: [NSLayoutConstraint] = [
             closeButton.centerYAnchor.constraint(equalTo: centerYAnchor),
             closeButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             closeButton.widthAnchor.constraint(equalToConstant: 44),
             closeButton.heightAnchor.constraint(equalToConstant: 44)
-        ])
-    }
-    
-    // MARK: - Actions
-    
-    @objc private func closeButtonTapped() {
-        onClose?()
+        ]
+        
+        NSLayoutConstraint.activate(titleLabelConstraints + closeButtonConstraints)
     }
 }

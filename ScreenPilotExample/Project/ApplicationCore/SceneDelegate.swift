@@ -3,11 +3,10 @@ import ScreenPilot
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
+
     private var debugWindow: UIWindow?
-    private var debugButton: DebugButton?
-    private var overlayView: OverlayView?
-    private var isOverlayVisible = false
     private var navigationManager: NavigationManager?
+    private var hierarchyObserver: ViewControllerHierarchyObserver?
 
     func scene(
         _ scene: UIScene,
@@ -21,9 +20,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         let rootViewController = makeInitialScreen()
         setupWindow(newWindow, rootViewController: rootViewController)
+
+        let hierarchyObserver = ViewControllerHierarchyObserver(mainWindow: newWindow)
+        self.hierarchyObserver = hierarchyObserver
         
-        setupNavigator(rootViewController: rootViewController)
-        setupDebugButton()
+        let navigationManager = makeNavigationManager(rootViewController: rootViewController, window: newWindow, hierarchyObserver: hierarchyObserver)
+        self.navigationManager = navigationManager
+
+        setupDebugWindow(navigationManager: navigationManager, hierarchyObserver: hierarchyObserver)
     }
 
     private func makeInitialScreen() -> UIViewController {
@@ -39,89 +43,29 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.rootViewController = rootViewController
         window.makeKeyAndVisible()
     }
-    
-    private func setupNavigator(rootViewController: UIViewController) {
-        guard let mainWindow = window else { return }
-        
+
+    private func makeNavigationManager(rootViewController: UIViewController, window: UIWindow, hierarchyObserver: ViewControllerHierarchyObserver) -> NavigationManager {
         let rootProvider = SPRootViewControllerProvider(rootViewController: rootViewController)
         let navigator = SPNavigator(rootViewControllerProvider: rootProvider)
-        self.navigationManager = NavigationManager(navigator: navigator, mainWindow: mainWindow)
+
+        return NavigationManager(navigator: navigator, mainWindow: window, hierarchyObserver: hierarchyObserver)
     }
 
-    private func setupDebugButton() {
+    private func setupDebugWindow(navigationManager: NavigationManager, hierarchyObserver: ViewControllerHierarchyObserver) {
         guard let windowScene = window?.windowScene else { return }
 
-        // Создаем отдельный window для debug UI поверх всего
         let debugWindow = UIWindow(windowScene: windowScene)
         debugWindow.windowLevel = .alert + 1
         debugWindow.backgroundColor = .clear
         debugWindow.isUserInteractionEnabled = true
-        
-        // Создаем прозрачный root view controller
-        let rootVC = UIViewController()
-        rootVC.view.backgroundColor = .clear
-        debugWindow.rootViewController = rootVC
+
+        let debugViewController = DebugViewController(navigationManager: navigationManager, hierarchyObserver: hierarchyObserver)
+        debugWindow.rootViewController = debugViewController
         debugWindow.makeKeyAndVisible()
-        
-        // Возвращаем key window обратно к основному окну
-        window?.makeKey()
-
-        let overlayView = OverlayView(frame: debugWindow.bounds)
-        overlayView.translatesAutoresizingMaskIntoConstraints = false
-
-        let debugButton = DebugButton()
-        debugButton.translatesAutoresizingMaskIntoConstraints = false
-
-        rootVC.view.addSubview(overlayView)
-        rootVC.view.addSubview(debugButton)
-
-        debugButton.widthAnchor.constraint(equalToConstant: 62).isActive = true
-        debugButton.heightAnchor.constraint(equalTo: debugButton.widthAnchor).isActive = true
-        debugButton.leadingAnchor.constraint(equalTo: rootVC.view.leadingAnchor).isActive = true
-        debugButton.bottomAnchor.constraint(equalTo: rootVC.view.bottomAnchor, constant: -60).isActive = true
-
-        overlayView.leadingAnchor.constraint(equalTo: rootVC.view.leadingAnchor).isActive = true
-        overlayView.topAnchor.constraint(equalTo: rootVC.view.topAnchor).isActive = true
-        overlayView.trailingAnchor.constraint(equalTo: rootVC.view.trailingAnchor).isActive = true
-        overlayView.bottomAnchor.constraint(equalTo: rootVC.view.bottomAnchor).isActive = true
-
-        debugButton.onTap { [weak self] in
-            self?.toggleOverlay()
-        }
-        
-        overlayView.onClose = { [weak self] in
-            self?.toggleOverlay()
-        }
-        
-        overlayView.onNavigationAction = { [weak self] action in
-            self?.handleNavigationAction(action)
-        }
-        
-        overlayView.onRefreshHierarchy = { [weak self] in
-            return self?.navigationManager?.getHierarchy() ?? "No hierarchy available"
-        }
 
         self.debugWindow = debugWindow
-        self.overlayView = overlayView
-        self.debugButton = debugButton
-    }
-    
-    private func toggleOverlay() {
-        guard let overlayView = overlayView else { return }
-        
-        if isOverlayVisible {
-            overlayView.hide()
-            isOverlayVisible = false
-        } else {
-            overlayView.show()
-            isOverlayVisible = true
-        }
-    }
-    
-    private func handleNavigationAction(_ action: NavigationAction) {
-        Task { @MainActor in
-            await navigationManager?.execute(action)
-        }
+
+        window?.makeKey()
     }
 }
 
