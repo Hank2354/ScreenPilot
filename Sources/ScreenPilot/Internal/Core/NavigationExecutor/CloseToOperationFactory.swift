@@ -118,7 +118,11 @@ private extension CloseToOperationFactory {
         
         let currentIndex = navController.viewControllers.firstIndex(of: viewController) ?? 0
         
-        next = hierarchyHelper.findModalRoot(for: navController)?.presentingViewController
+        if let presentingVC = hierarchyHelper.findModalRoot(for: navController)?.presentingViewController {
+            next = hierarchyHelper.resolveContentViewController(from: presentingVC)
+        } else {
+            next = nil
+        }
         
         guard currentIndex > 0 else {
             return nil
@@ -135,7 +139,11 @@ private extension CloseToOperationFactory {
             return nil
         }
         
-        next = modalRoot.presentingViewController
+        if let presentingVC = modalRoot.presentingViewController {
+            next = hierarchyHelper.resolveContentViewController(from: presentingVC)
+        } else {
+            next = nil
+        }
         
         return .dismiss(viewController: modalRoot)
     }

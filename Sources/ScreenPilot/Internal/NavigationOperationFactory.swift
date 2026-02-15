@@ -180,7 +180,7 @@ class NavigationOperationFactory {
 
         return .success([operation])
     }
-    
+
     func makeReplaceTopOperation(
         viewController: UIViewController,
         animation: SPNavigationAnimation

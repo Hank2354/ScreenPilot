@@ -12,7 +12,7 @@ enum NavigationOperation {
     case dismissAll(DismissAllContext)
     case close(CloseContext)
     case closeTo(CloseToContext)
-    
+
     struct PushContext {
         let viewControllers: [UIViewController]
         let navigationController: UINavigationController

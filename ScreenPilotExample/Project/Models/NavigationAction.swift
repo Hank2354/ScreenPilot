@@ -9,4 +9,5 @@ enum NavigationAction {
     case dismiss(count: Int, animated: Bool)
     case dismissAll(animated: Bool)
     case close(count: Int, animated: Bool)
+    case closeAll(animated: Bool)
 }

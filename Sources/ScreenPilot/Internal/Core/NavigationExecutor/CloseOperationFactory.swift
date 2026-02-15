@@ -68,7 +68,7 @@ private extension CloseOperationFactory {
         remaining -= screensInModal
         
         if remaining > 0 {
-            current = resolveContentViewController(from: presentingVC)
+            current = hierarchyHelper.resolveContentViewController(from: presentingVC)
         } else {
             current = nil
         }
@@ -81,26 +81,6 @@ private extension CloseOperationFactory {
         )
 
         return .dismiss(context)
-    }
-    
-    func resolveContentViewController(
-        from viewController: UIViewController
-    ) -> UIViewController {
-        if let navController = viewController as? UINavigationController,
-           let topVC = navController.topViewController {
-            return topVC
-        }
-        
-        if let tabController = viewController as? UITabBarController,
-           let selected = tabController.selectedViewController {
-            if let navController = selected as? UINavigationController,
-               let topVC = navController.topViewController {
-                return topVC
-            }
-            return selected
-        }
-        
-        return viewController
     }
     
     func tryPopNavigation(

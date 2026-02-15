@@ -156,6 +156,10 @@ final class CloseActionsDebugView: UIView {
                 title: "Close",
                 stepper: closeCountStepper,
                 action: { [weak self] in self?.handleCloseAction() }
+            ),
+            CloseActionRowConfiguration(
+                title: "Close All",
+                action: { [weak self] in self?.handleCloseAllAction() }
             )
         ]
         
@@ -223,5 +227,10 @@ final class CloseActionsDebugView: UIView {
         let count = closeCountStepper.value
         let animated = animationSwitch.isOn
         onAction?(.close(count: count, animated: animated))
+    }
+
+    private func handleCloseAllAction() {
+        let animated = animationSwitch.isOn
+        onAction?(.closeAll(animated: animated))
     }
 }

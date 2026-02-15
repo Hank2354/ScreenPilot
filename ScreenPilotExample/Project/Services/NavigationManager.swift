@@ -53,6 +53,10 @@ final class NavigationManager {
                     count: count,
                     animation: animated ? .default : .none
                 )
+            case .closeAll(animated: let animated):
+                result = await navigator.closeAll(
+                    animation: animated ? .default : .none
+                )
         }
 
         handleResult(result)

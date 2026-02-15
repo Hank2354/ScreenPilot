@@ -4,6 +4,7 @@ import UIKit
 protocol ViewControllerHierarchyHelper {
     func findModalRoot(for viewController: UIViewController) -> UIViewController?
     func findTopViewController(from viewController: UIViewController) -> UIViewController?
+    func resolveContentViewController(from viewController: UIViewController) -> UIViewController
     func countScreens(in viewController: UIViewController) -> Int
 }
 
@@ -43,6 +44,24 @@ class ViewControllerHierarchyHelperImpl: ViewControllerHierarchyHelper {
         }
         
         return current
+    }
+    
+    func resolveContentViewController(from viewController: UIViewController) -> UIViewController {
+        if let navController = viewController as? UINavigationController,
+           let topVC = navController.topViewController {
+            return topVC
+        }
+        
+        if let tabController = viewController as? UITabBarController,
+           let selected = tabController.selectedViewController {
+            if let navController = selected as? UINavigationController,
+               let topVC = navController.topViewController {
+                return topVC
+            }
+            return selected
+        }
+        
+        return viewController
     }
     
     func countScreens(in viewController: UIViewController) -> Int {

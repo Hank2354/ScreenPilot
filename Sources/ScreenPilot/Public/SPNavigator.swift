@@ -379,6 +379,32 @@ public class SPNavigator {
         )
         return await process(item)
     }
+
+    /**
+    Closes all screens from the top visible screen.
+
+    This method works like ``dismissAll(animation:) + popToRoot(animation:)``
+
+    - Parameters:
+      - animation: The animation configuration for the transition. Defaults to `.default`.
+
+    - Returns: A `SPNavigationResult` indicating success or failure. Returns
+      `.failure(.viewControllerNotInHierarchy)` if the target is not found.
+
+    ## Example
+
+    Consider a hierarchy: `Root -> A -> B -> Modal(Nav -> C -> D)`
+
+    ```swift
+    // This will: dismiss the modal, and pop to root
+    await navigator.closeAll()
+    ```
+    */
+    public func closeAll(
+        animation: SPNavigationAnimation = .default
+    ) async -> SPNavigationResult {
+        await close(count: .max, animation: animation)
+    }
 }
 
 private extension SPNavigator {
