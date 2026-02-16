@@ -4,9 +4,8 @@ import ScreenPilot
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
 
-    private var debugWindow: UIWindow?
-    private var navigationManager: NavigationManager?
-    private var hierarchyObserver: ViewControllerHierarchyObserver?
+    private var debugWindow: UIWindow!
+    private var dependencyContainer: DependencyContainer!
 
     func scene(
         _ scene: UIScene,
@@ -14,20 +13,31 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         options connectionOptions: UIScene.ConnectionOptions
     ) {
         guard let windowScene = scene as? UIWindowScene else { return }
-
-        let newWindow = UIWindow(windowScene: windowScene)
+        let newWindow = makeMainWindow(windowScene: windowScene)
         window = newWindow
+
+        debugWindow = makeDebugWindow(windowScene: windowScene)
 
         let rootViewController = makeInitialScreen()
         setupWindow(newWindow, rootViewController: rootViewController)
 
-        let hierarchyObserver = ViewControllerHierarchyObserver(mainWindow: newWindow)
-        self.hierarchyObserver = hierarchyObserver
-        
-        let navigationManager = makeNavigationManager(rootViewController: rootViewController, window: newWindow, hierarchyObserver: hierarchyObserver)
-        self.navigationManager = navigationManager
+        dependencyContainer = DependencyContainer(mainWindow: newWindow)
 
-        setupDebugWindow(navigationManager: navigationManager, hierarchyObserver: hierarchyObserver)
+        let debugViewController = makeDebugScreen()
+        setupWindow(debugWindow, rootViewController: debugViewController)
+
+        window?.makeKey()
+    }
+}
+
+// MARK: - Factories
+private extension SceneDelegate {
+    private func makeMainWindow(windowScene: UIWindowScene) -> UIWindow {
+        UIWindow(windowScene: windowScene)
+    }
+
+    private func makeDebugWindow(windowScene: UIWindowScene) -> UIWindow {
+        PassthroughDebugWindow(windowScene: windowScene)
     }
 
     private func makeInitialScreen() -> UIViewController {
@@ -39,33 +49,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         return initialNavigationController
     }
 
+    private func makeDebugScreen() -> UIViewController {
+        DebugViewController(
+            navigationManager: dependencyContainer.navigationManager,
+            hierarchyObserver: dependencyContainer.viewControllerHierarchyObserver
+        )
+    }
+}
+
+// MARK: - Helpers
+private extension SceneDelegate {
     private func setupWindow(_ window: UIWindow, rootViewController: UIViewController) {
         window.rootViewController = rootViewController
         window.makeKeyAndVisible()
     }
-
-    private func makeNavigationManager(rootViewController: UIViewController, window: UIWindow, hierarchyObserver: ViewControllerHierarchyObserver) -> NavigationManager {
-        let rootProvider = SPRootViewControllerProvider(rootViewController: rootViewController)
-        let navigator = SPNavigator(rootViewControllerProvider: rootProvider)
-
-        return NavigationManager(navigator: navigator, mainWindow: window, hierarchyObserver: hierarchyObserver)
-    }
-
-    private func setupDebugWindow(navigationManager: NavigationManager, hierarchyObserver: ViewControllerHierarchyObserver) {
-        guard let windowScene = window?.windowScene else { return }
-
-        let debugWindow = UIWindow(windowScene: windowScene)
-        debugWindow.windowLevel = .alert + 1
-        debugWindow.backgroundColor = .clear
-        debugWindow.isUserInteractionEnabled = true
-
-        let debugViewController = DebugViewController(navigationManager: navigationManager, hierarchyObserver: hierarchyObserver)
-        debugWindow.rootViewController = debugViewController
-        debugWindow.makeKeyAndVisible()
-
-        self.debugWindow = debugWindow
-
-        window?.makeKey()
-    }
 }
-

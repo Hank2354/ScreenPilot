@@ -2,15 +2,27 @@ import UIKit
 import ScreenPilot
 
 @MainActor
-final class NavigationManager {
-    
-    private let navigator: SPNavigator
+protocol NavigationManager {
+
+    func execute(_ action: NavigationAction) async
+}
+
+final class NavigationManagerImpl: NavigationManager {
     private weak var mainWindow: UIWindow?
+
+    private let navigator: SPNavigator
+    private let demoScreenFactory: DemoScreenFactory
     private let hierarchyObserver: ViewControllerHierarchyObserver
     
-    init(navigator: SPNavigator, mainWindow: UIWindow, hierarchyObserver: ViewControllerHierarchyObserver) {
-        self.navigator = navigator
+    init(
+        mainWindow: UIWindow,
+        navigator: SPNavigator,
+        demoScreenFactory: DemoScreenFactory,
+        hierarchyObserver: ViewControllerHierarchyObserver
+    ) {
         self.mainWindow = mainWindow
+        self.navigator = navigator
+        self.demoScreenFactory = demoScreenFactory
         self.hierarchyObserver = hierarchyObserver
     }
     
@@ -156,14 +168,20 @@ final class NavigationManager {
 
     private func createDemoScreen(number: Int) -> SPScreenPrototype {
         return SPScreenPrototype(
-            factory: { DemoScreenFactory.createScreen(number: number) },
+            factory: { [demoScreenFactory] in
+                demoScreenFactory.makeDemoScreen(number: number, navigationManager: self)
+            },
             requirements: []
         )
     }
 
     private func createDemoScreenWithNavigationControler(number: Int) -> SPScreenPrototype {
         return SPScreenPrototype(
-            factory: { UINavigationController(rootViewController: DemoScreenFactory.createScreen(number: number)) },
+            factory: { [demoScreenFactory] in
+                UINavigationController(
+                    rootViewController: demoScreenFactory.makeDemoScreen(number: number, navigationManager: self)
+                )
+            },
             requirements: []
         )
     }

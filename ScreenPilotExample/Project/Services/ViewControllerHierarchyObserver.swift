@@ -1,8 +1,24 @@
 import UIKit
 
 @MainActor
-final class ViewControllerHierarchyObserver {
-    
+protocol HierarchyListener: AnyObject {
+    func hierarchyDidChange(_ hierarchy: String)
+}
+
+@MainActor
+protocol ViewControllerHierarchyObserver {
+
+    func addListener(_ listener: HierarchyListener)
+
+    func removeListener(_ listener: HierarchyListener)
+
+    func notifyHierarchyChanged()
+
+    func getCurrentHierarchy() -> String
+}
+
+final class ViewControllerHierarchyObserverImpl: ViewControllerHierarchyObserver {
+
     private weak var mainWindow: UIWindow?
     private var listeners: [HierarchyListener] = []
     
@@ -74,9 +90,4 @@ final class ViewControllerHierarchyObserver {
         let fullName = String(describing: type(of: viewController))
         return fullName.replacingOccurrences(of: "ViewController", with: "VC")
     }
-}
-
-@MainActor
-protocol HierarchyListener: AnyObject {
-    func hierarchyDidChange(_ hierarchy: String)
 }

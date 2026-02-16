@@ -31,6 +31,7 @@ final class OverlayView: UIView {
     }
     
     func show() {
+        isHidden = false
         UIView.animate(withDuration: 0.3) {
             self.alpha = 1
         }
@@ -39,21 +40,21 @@ final class OverlayView: UIView {
     func hide() {
         UIView.animate(withDuration: 0.3) {
             self.alpha = 0
+        } completion: { _ in
+            self.isHidden = true
         }
     }
     
     func updateHierarchy(_ hierarchy: String) {
         debugPanelView.updateHierarchy(hierarchy)
     }
-    
-    // MARK: - Timer Management
 }
 
-// MARK: - Private
 private extension OverlayView {
     
     func setupUI() {
         alpha = 0
+        isHidden = true
         
         addSubview(backgroundView)
         addSubview(debugPanelView)

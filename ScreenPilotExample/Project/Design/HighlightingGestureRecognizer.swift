@@ -5,7 +5,7 @@ final class HighlightingGestureRecognizer: UIGestureRecognizer {
 
     private let handler: GestureHandler?
 
-    required init(handler: ((_ gestureRecognizer: UIGestureRecognizer) -> Void)?) {
+    required init(handler: GestureHandler?) {
         self.handler = handler
         super.init(target: nil, action: nil)
 
@@ -24,9 +24,7 @@ final class HighlightingGestureRecognizer: UIGestureRecognizer {
     public override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
         super.touchesMoved(touches, with: event)
 
-        guard let view = view, let point = Array(touches).last?.location(in: view) else {
-            return
-        }
+        guard let view = view, let point = Array(touches).last?.location(in: view) else { return }
 
         if view.bounds.contains(point) {
             state = .changed

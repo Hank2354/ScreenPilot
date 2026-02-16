@@ -86,8 +86,6 @@ final class OpenActionsDebugView: UIView {
         return labeledSwitch
     }()
     
-    // MARK: - Initialization
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
@@ -96,9 +94,7 @@ final class OpenActionsDebugView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    // MARK: - Setup
-    
+
     private func setupUI() {
         addSubview(containerView)
         containerView.addSubview(titleLabel)
