@@ -1,6 +1,26 @@
 # ScreenPilot
 
+> 🇷🇺 [Русская версия](docs/README_ru.md)
+
 A lightweight UIKit navigation library for iOS that provides a unified, async API for push, modal, and complex mixed-hierarchy navigation.
+
+<!-- shields -->
+
+---
+
+## 📋 Table of Contents
+
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Navigation Styles](#navigation-styles)
+- [Closing Screens](#closing-screens)
+- [Animations](#animations)
+- [Navigation Requirements](#navigation-requirements)
+- [Screen Deduplication](#screen-deduplication)
+- [License](#license)
+
+---
 
 ## Requirements
 
@@ -15,14 +35,14 @@ A lightweight UIKit navigation library for iOS that provides a unified, async AP
 In Xcode: **File → Add Package Dependencies**, paste the repository URL:
 
 ```
-https://github.com/vzmashkov/ScreenPilot
+https://github.com/Hank2354/ScreenPilot
 ```
 
 Or add it to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/vzmashkov/ScreenPilot", from: "1.0.0")
+    .package(url: "https://github.com/Hank2354/ScreenPilot", from: "1.0.0")
 ],
 targets: [
     .target(
@@ -56,7 +76,7 @@ let profileScreen = SPScreenPrototype(
 )
 ```
 
-### 3. Navigate
+### 3. Navigate 🚀
 
 ```swift
 // Push
@@ -105,7 +125,7 @@ await navigator.dismiss()
 await navigator.dismissAll()
 ```
 
-### `close` — smart mixed-hierarchy closing
+### `close` — smart mixed-hierarchy closing 🧠
 
 `close` intelligently handles hierarchies that mix push and modal navigation:
 
@@ -141,7 +161,7 @@ await navigator.navigate(to: [screen], style: .push, configuration: .init(animat
 
 ## Navigation Requirements
 
-Guard screens behind custom validation logic using `SPScreenRequirement`:
+Guard screens behind custom validation logic using `SPScreenRequirement` 🔒:
 
 ```swift
 struct AuthRequirement: SPScreenRequirement {
@@ -174,7 +194,7 @@ let config = SPNavigationConfiguration(screenFinder: SPDefaultScreenFinder())
 await navigator.navigate(to: [profileScreen], style: .push, configuration: config)
 ```
 
-### Context-aware matching
+### Context-aware matching 🎯
 
 To distinguish between multiple instances of the same screen type, conform your view controller
 to `SPScreenContextComparable`:
