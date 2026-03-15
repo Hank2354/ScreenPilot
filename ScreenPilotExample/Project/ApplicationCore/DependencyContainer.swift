@@ -4,6 +4,8 @@ import ScreenPilot
 final class DependencyContainer {
 
     private var mainWindow: UIWindow
+    private let sharedInstanceLock = NSLock()
+    private var sharedInstances = [String: Any]()
 
     init(mainWindow: UIWindow) {
         self.mainWindow = mainWindow
@@ -11,9 +13,11 @@ final class DependencyContainer {
 
     @MainActor
     var viewControllerHierarchyObserver: ViewControllerHierarchyObserver {
-        ViewControllerHierarchyObserverImpl(
-            mainWindow: mainWindow
-        )
+        shared {
+            ViewControllerHierarchyObserverImpl(
+                mainWindow: mainWindow
+            )
+        }
     }
 
     @MainActor
@@ -55,5 +59,19 @@ private extension DependencyContainer {
         SPRootViewControllerProvider(
             rootViewController: rootViewController
         )
+    }
+}
+
+private extension DependencyContainer {
+    func shared<T>(function: String = #function, _ factory: () -> T) -> T {
+        sharedInstanceLock.withLock {
+            guard let instance = (sharedInstances[function] as? T?) ?? nil else {
+                let instance = factory()
+                sharedInstances[function] = instance
+                return instance
+            }
+
+            return instance
+        }
     }
 }
