@@ -75,7 +75,7 @@ final class DebugView: UIView {
             debugButton.widthAnchor.constraint(equalToConstant: Constants.debugButtonSize),
             debugButton.heightAnchor.constraint(equalTo: debugButton.widthAnchor),
             debugButton.leadingAnchor.constraint(equalTo: leadingAnchor),
-            debugButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -60)
+            debugButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -98)
         ]
 
         NSLayoutConstraint.activate(overlayViewConstraints + debugButtonConstraints)

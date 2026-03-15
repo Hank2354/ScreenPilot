@@ -41,12 +41,23 @@ private extension SceneDelegate {
     }
 
     private func makeInitialScreen() -> UIViewController {
-        let initialViewController = InitialViewController()
-        let initialNavigationController = UINavigationController(rootViewController: initialViewController)
+        let firstInitialViewController = InitialViewController(tabIndex: 0)
+        let secondInitialViewController = InitialViewController(tabIndex: 1)
 
-        initialNavigationController.navigationBar.prefersLargeTitles = true
+        let firstInitialNavigationController = UINavigationController(rootViewController: firstInitialViewController)
+        let secondInitialNavigationController = UINavigationController(rootViewController: secondInitialViewController)
 
-        return initialNavigationController
+        firstInitialNavigationController.navigationBar.prefersLargeTitles = true
+        secondInitialNavigationController.navigationBar.prefersLargeTitles = true
+
+        let tabBarViewController = UITabBarController()
+
+        tabBarViewController.setViewControllers(
+            [firstInitialNavigationController, secondInitialNavigationController],
+            animated: false
+        )
+
+        return tabBarViewController
     }
 
     private func makeDebugScreen() -> UIViewController {

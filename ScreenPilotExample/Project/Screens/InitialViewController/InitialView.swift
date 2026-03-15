@@ -22,6 +22,16 @@ final class InitialView: UIView {
         return label
     }()
 
+    private lazy var screenLabel: UILabel = {
+        let label = UILabel()
+        label.prepareForAutoLayout()
+        label.font = .systemFont(ofSize: 24, weight: .semibold)
+        label.textColor = .black
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        return label
+    }()
+
     private lazy var logoImageView: UIImageView = {
         let imageView = UIImageView(image: .screenPilotLogo)
         imageView.prepareForAutoLayout()
@@ -29,15 +39,18 @@ final class InitialView: UIView {
         return imageView
     }()
 
-    func configure() {
+    func configure(screenNumber: Int) {
         backgroundColor = .systemBackground
         setupSubviews()
+
+        screenLabel.text = "Screen #\(screenNumber)"
     }
 
     private func setupSubviews() {
         addSubview(logoImageView)
         addSubview(titleMessageLabel)
         addSubview(infoLabel)
+        addSubview(screenLabel)
 
         let logoImageViewConstraints: [NSLayoutConstraint] = [
             logoImageView.centerXAnchor.constraint(equalTo: centerXAnchor),
@@ -54,11 +67,23 @@ final class InitialView: UIView {
         ]
 
         let infoLabelConstraints: [NSLayoutConstraint] = [
-            infoLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -52),
+            infoLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -90),
             infoLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 70),
         ]
 
-        NSLayoutConstraint.activate(logoImageViewConstraints + titleMessageLabelConstraints + infoLabelConstraints)
+        let screenLabelConstraints: [NSLayoutConstraint] = [
+            screenLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+            screenLabel.topAnchor.constraint(equalTo: titleMessageLabel.bottomAnchor, constant: 32),
+            screenLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            screenLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16)
+        ]
+
+        NSLayoutConstraint.activate(
+            logoImageViewConstraints +
+            titleMessageLabelConstraints +
+            infoLabelConstraints +
+            screenLabelConstraints
+        )
 
         titleMessageLabel.text = Constants.titleMessage
         infoLabel.text = Constants.infoMessage

@@ -106,17 +106,38 @@ private extension SPDefaultScreenFinder {
 
         while let viewController = currentViewController {
             hierarchy.append(viewController)
-            
+
             // Add all view controllers from the navigation stack (if any)
             if let navigationStack = extractNavigationStack(from: viewController) {
                 hierarchy.append(contentsOf: navigationStack)
             }
-            
+
             // Move to the next view controller in the presentation chain
             currentViewController = findNextViewControllerInPresentationChain(from: viewController)
         }
 
+        // Also search view controllers in other tabs, if any
+        hierarchy.append(contentsOf: buildOtherTabsVCs(startingFrom: topViewController))
+
         return hierarchy
+    }
+
+    func buildOtherTabsVCs(startingFrom viewController: UIViewController) -> [UIViewController] {
+        guard let tabBarController = viewController.tabBarController,
+              let allTabs = tabBarController.viewControllers else {
+            return []
+        }
+
+        var result: [UIViewController] = []
+        for tab in allTabs {
+            guard tab !== tabBarController.selectedViewController else { continue }
+            if let navController = tab as? UINavigationController {
+                result.append(contentsOf: navController.viewControllers.reversed())
+            } else {
+                result.append(tab)
+            }
+        }
+        return result
     }
     
     /// Extracts all view controllers from the navigation stack before the current one

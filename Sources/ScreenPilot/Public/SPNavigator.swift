@@ -120,6 +120,10 @@ public class SPNavigator {
 
         if let screenFinder = configuration.screenFinder,
            let existingViewController = await findScreen(screenFinder, for: firstViewController) {
+            switchToTabIfNeeded(for: existingViewController)
+            guard topViewControllerProvider.topViewController !== existingViewController else {
+                return .success
+            }
             return await closeTo(existingViewController, animation: configuration.animation)
         }
 
@@ -430,7 +434,27 @@ private extension SPNavigator {
             startingFrom: topViewController
         )
     }
-    
+
+    func switchToTabIfNeeded(for viewController: UIViewController) {
+        guard let tabBarController = viewController.tabBarController,
+              let allTabs = tabBarController.viewControllers else { return }
+
+        for (index, tab) in allTabs.enumerated() {
+            guard tabContains(tab, viewController: viewController) else { continue }
+            if tabBarController.selectedIndex != index {
+                tabBarController.selectedIndex = index
+            }
+            return
+        }
+    }
+
+    func tabContains(_ tab: UIViewController, viewController: UIViewController) -> Bool {
+        if let navController = tab as? UINavigationController {
+            return navController.viewControllers.contains(viewController)
+        }
+        return tab === viewController
+    }
+
     func process(_ item: NavigationOperationItem) async -> SPNavigationResult {
         switch item {
 
