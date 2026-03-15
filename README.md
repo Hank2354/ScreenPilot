@@ -2,9 +2,12 @@
 
 > 🇷🇺 [Русская версия](docs/README_ru.md)
 
-A lightweight UIKit navigation library for iOS that provides a unified, async API for push, modal, and complex mixed-hierarchy navigation.
+[![Language badge](https://img.shields.io/badge/language-Swift%206.2-orange)](https://www.swift.org/blog/swift-6.2-released/)
+[![License Badge](https://img.shields.io/badge/license-MIT-blue)](https://github.com/Hank2354/ScreenPilot/blob/main/LICENSE)
+[![GitHub Release](https://img.shields.io/github/v/release/Hank2354/ScreenPilot?color=green)](https://github.com/Hank2354/ScreenPilot/releases)
 
-<!-- shields -->
+
+A lightweight UIKit navigation library for iOS that provides a unified, async API for push, modal, and complex mixed-hierarchy navigation.
 
 ---
 
