@@ -2,9 +2,11 @@
 
 > 🇬🇧 [English version](../README.md)
 
-Легковесная библиотека навигации для UIKit, предоставляющая единый async API для push, modal и сложной смешанной навигации.
+[![Language badge](https://img.shields.io/badge/language-Swift%206.2-orange)](https://www.swift.org/blog/swift-6.2-released/)
+[![License Badge](https://img.shields.io/badge/license-MIT-blue)](https://github.com/Hank2354/ScreenPilot/blob/main/LICENSE)
+[![GitHub Release](https://img.shields.io/github/v/release/Hank2354/ScreenPilot?color=green)](https://github.com/Hank2354/ScreenPilot/releases)
 
-<!-- shields -->
+Легковесная библиотека навигации для UIKit, предоставляющая единый async API для push, modal и сложной смешанной навигации.
 
 ---
 
