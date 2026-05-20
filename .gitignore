@@ -11,3 +11,8 @@ playground.xcworkspace
 *.ipa
 *.dSYM.zip
 *.dSYM
+
+# AI
+.claude/settings.local.json
+.ai-plans/
+.agent-memory/

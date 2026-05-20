@@ -28,6 +28,10 @@ private extension TopViewControllerProviderImpl {
         if let presented = viewController.presentedViewController {
             return getTopViewController(from: presented)
         }
+        
+        if let child = viewController.children.last {
+            return getTopViewController(from: child)
+        }
 
         if let navigationController = viewController as? UINavigationController,
            let visibleViewController = navigationController.visibleViewController {
